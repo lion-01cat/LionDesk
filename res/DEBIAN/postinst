@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+if [ "$1" = configure ]; then
+
+	INITSYS=$(ls -al /proc/1/exe | awk -F' ' '{print $NF}' | awk -F'/' '{print $NF}')
+	ln -f -s /usr/share/liondesk/liondesk /usr/bin/liondesk
+
+	if [ "systemd" == "$INITSYS" ]; then
+
+		if [ -e /etc/systemd/system/liondesk.service ]; then
+			rm /etc/systemd/system/liondesk.service /usr/lib/systemd/system/liondesk.service /usr/lib/systemd/user/liondesk.service >/dev/null  2>&1
+		fi
+		mkdir -p /usr/lib/systemd/system/
+		cp /usr/share/liondesk/files/systemd/liondesk.service /usr/lib/systemd/system/liondesk.service
+		# try fix error in Ubuntu 18.04
+		# Failed to reload liondesk.service: Unit liondesk.service is not loaded properly: Exec format error.
+		# /usr/lib/systemd/system/liondesk.service:10: Executable path is not absolute: pkill -f "liondesk --"
+		if [ -e /usr/bin/pkill ]; then
+			sed -i "s|pkill|/usr/bin/pkill|g" /usr/lib/systemd/system/liondesk.service
+		fi
+		systemctl daemon-reload
+		systemctl enable liondesk
+		systemctl start liondesk
+	fi
+fi

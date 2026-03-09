@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=LionDesk
+NoDisplay=true
+MimeType=x-scheme-handler/liondesk;
+TryExec=liondesk
+Exec=liondesk %u
+Icon=liondesk
+Terminal=false
+Type=Application
+StartupNotify=false
+StartupWMClass=liondesk

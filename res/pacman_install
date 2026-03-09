@@ -1,0 +1,47 @@
+# arg 1:  the new package version
+#pre_install() {
+#}
+
+# arg 1:  the new package version
+post_install() {
+	# do something here
+	cp /usr/share/liondesk/files/liondesk.service /etc/systemd/system/liondesk.service
+	cp /usr/share/liondesk/files/liondesk.desktop /usr/share/applications/
+	cp /usr/share/liondesk/files/liondesk-link.desktop /usr/share/applications/
+	systemctl daemon-reload
+	systemctl enable liondesk
+	systemctl start liondesk
+	update-desktop-database
+}
+
+# arg 1:  the new package version
+# arg 2:  the old package version
+pre_upgrade() {
+    systemctl stop liondesk || true
+}
+
+# arg 1:  the new package version
+# arg 2:  the old package version
+post_upgrade() {
+	cp /usr/share/liondesk/files/liondesk.service /etc/systemd/system/liondesk.service
+	cp /usr/share/liondesk/files/liondesk.desktop /usr/share/applications/
+	cp /usr/share/liondesk/files/liondesk-link.desktop /usr/share/applications/
+	systemctl daemon-reload
+	systemctl enable liondesk
+	systemctl start liondesk
+	update-desktop-database
+}
+
+# arg 1:  the old package version
+pre_remove() {
+	systemctl stop liondesk || true
+	systemctl disable liondesk || true
+	rm /etc/systemd/system/liondesk.service || true
+}
+
+# arg 1:  the old package version
+post_remove() {
+	rm /usr/share/applications/liondesk.desktop || true
+	rm /usr/share/applications/liondesk-link.desktop || true
+	update-desktop-database
+}
